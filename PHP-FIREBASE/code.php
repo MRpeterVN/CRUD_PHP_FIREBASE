@@ -22,23 +22,29 @@ else
  $_SESSION['status'] = " Delete Fail ";
  header('Location: index.php');
 }
-
-
 }
 
 
 
-
-// edit
+//edit
 if(isset($_POST['update']))
 {
     $key = $_POST['key'];
     $name = $_POST['name'];
     $class = $_POST['class'];
+    $category = $_POST['category'];
+
+    $timestamp = new \Google\Cloud\Core\Timestamp(new DateTime());
+    $formattedTimestamp = $timestamp->get()->format('d-m-Y');
+
   
     $updateData = [
-        'name' => $name,
-        'class' => $class,
+        'song_name' => $name,
+        'singer_name' => $class,
+        'category'=>$category,
+        'ngaydang'=> $formattedTimestamp,
+
+        
     ];
     
     $ref_table = 'DataSong/'.$key;
@@ -67,6 +73,11 @@ if(isset($_POST['save'])){
     $class = $_POST['class'];
     $selected_category = $_POST['category'];
 
+    $timestamp = new \Google\Cloud\Core\Timestamp(new DateTime());
+
+    // Định dạng lại trường thời gian theo định dạng 'd-m-Y'
+    $formattedTimestamp = $timestamp->get()->format('d-m-Y');
+
 // uplaod file
     if($_FILES['file']['error'] === UPLOAD_ERR_OK && $_FILES['imageSing']['name']){
         $filename = 'Nhac/' . $_FILES['file']['name'];
@@ -75,7 +86,8 @@ if(isset($_POST['save'])){
             ['name' => $filename]
         );
         
-        $urlFile = $bucket->object($filename)->signedUrl(time() + 3600);
+        $urlFile = $bucket->object($filename)->signedUrl(new \DateTime('+1 year'));
+
         
 // upload img
            $fileImg = 'Anh/' . $_FILES['imageSing']['name'];;
@@ -85,15 +97,16 @@ if(isset($_POST['save'])){
                     ['name' => $fileImg]
                 );
     
-                $urlImg = $bucket->object($fileImg)->signedUrl(time() + 3600);
+                $urlImg = $bucket->object($fileImg)->signedUrl(new \DateTime('+1 year'));
 
   
     $postData = [
-        'name' => $name,
-        'class' => $class,
+        'song_name' => $name,
+        'singer_name' => $class,
         'category' => $selected_category,
         'urlFile' => $urlFile,
         'urlImg' => $urlImg,
+        'ngaydang'=> $formattedTimestamp,
     ];
     $ref_table = "DataSong";
     $postRef_result = $database->getReference($ref_table)->push($postData);
@@ -110,6 +123,5 @@ if(isset($_POST['save'])){
 
 } 
 }
-
 
 ?>

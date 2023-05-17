@@ -1,12 +1,4 @@
-<?php
 
-session_start();
-
-if(isset($_SESSION['status'])) {
-    echo $_SESSION['status'];
-   
-}
- ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +7,7 @@ if(isset($_SESSION['status'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <title>Hang Music</title>
+    <link rel="icon" type="image/x-icon" href="https://image-us.24h.com.vn/upload/1-2018/images/2018-01-22/1516593555-411-thumbnail.jpg">
 
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" />
 
@@ -28,7 +21,7 @@ if(isset($_SESSION['status'])) {
         <!-- LOGOO -->
         <div class="logo" id="logo">
             <a href="index.php" target="_self">
-                <img ismap src="https://png.pngtree.com/element_our/png/20181022/music-and-live-music-logo-with-neon-light-effect-vector-png_199406.jpg" alt="" />
+                <img ismap src="https://image-us.24h.com.vn/upload/1-2018/images/2018-01-22/1516593555-411-thumbnail.jpg" alt="" />
             </a>
             <h3>HANG MUSIC</h3>
         </div>
@@ -41,9 +34,10 @@ if(isset($_SESSION['status'])) {
         </div>
         <!-- END ITEMS -->
     </section>
+ 
     <section id="interface">
-     <!-- navigation -->
-    <div class="navigation">
+
+    <div class="navigation" style="z-index: 100;";>
             <div class="n1">
                 <i id="menu-btn" class="fas fa-bars"></i>
                 <div class="search">
@@ -53,7 +47,7 @@ if(isset($_SESSION['status'])) {
             </div>
             <div class="profil">
                 <i class="far fa-bell"></i>
-                <img src="img/img4.jpg" alt="">
+                <img src="https://th.bing.com/th/id/R.0c86caa79bcecba8da8b8c0f51bec4a4?rik=tqBlDVm1hzuTqg&pid=ImgRaw&r=0" alt="">
             </div>
         </div>
 
@@ -62,14 +56,32 @@ if(isset($_SESSION['status'])) {
         <h3 class="i-name">
             Dasboard
         </h3>
+        <?php
+     include('dbcon.php');
+    $ref_tablde = 'DataSong';
+    $data = $database->getReference($ref_tablde)->getValue();  
+    $file = $bucket->object('test');
+    $url = $file->signedUrl(new \DateTime('+3 year'));
 
+
+    // count
+    $database = $factory->createDatabase();
+    $SingRef = $database->getReference('DataSong');
+    $snapshot = $SingRef->getSnapshot();
+    $count = $snapshot->numChildren();
+   
+    
+
+  
+    $i = 0;
+         ?>
 
 
         <div class="values">
             <div class="val-box">
                 <i class="fas fa-users"></i>
                 <div>
-                    <h3>10</h3>
+                    <h3><?php echo $count; ?> </h3>
                     <span>Bài hát</span>
                 </div>
             </div>
@@ -100,16 +112,24 @@ if(isset($_SESSION['status'])) {
 
 
 
-        <?php
-     include('dbcon.php');
-    $ref_tablde = 'DataSong';
-    $data = $database->getReference($ref_tablde)->getValue();  
-    $file = $bucket->object('Anh/');
-    $url = $file->signedUrl(new \DateTime('tomorrow'));
-    $i = 0;
-         ?>
+     
     
 
+    <div id="content_ss"></script>
+    <?php
+ session_start();
+ if(isset($_SESSION['status'])) {
+    echo $_SESSION['status'];
+   
+}
+ ?></div>
+
+<script>
+    // Ẩn nội dung sau 5s
+    setTimeout(function() {
+        document.getElementById('content_ss').style.display = 'none';
+    }, 3000); // 5000ms = 5s
+</script>
 
 <div class="board">
 <table width="100%">
@@ -126,29 +146,43 @@ if(isset($_SESSION['status'])) {
         </tr>
     </thead>
     <tbody>
-        
+  <?php if (empty($data)): ?>
+    <p>Không có dữ liệu</p>
+<?php else: ?>
     <?php foreach ($data as $key => $row): ?>
+        <!-- Các lệnh để hiển thị dữ liệu -->
+
         <tr>
         <td><?php echo $i++; ?></td>
             <td class="people">
-              <?php echo '<img src="' . $row['urlImg'] . '">'; ?>
+              <?php 
+              $url = $row['urlImg'];
+
+              if (strpos($url, 'gs://laravel-test-625e8.appspot.com') !== false) {
+                $url = $file->signedUrl(new \DateTime('+3 year'));
+           }
+           
+             echo '<img src="' . $url . '">';
+               ?>
     
                     <div class="people-de">
-                    <h5><?php echo $row['name']; ?></h5>
+                    <h5><?php echo $row['song_name']; ?></h5>
                 </div>
             </td>
             <td class="people-job">
-                <h5><?php echo $row['class']; ?></h5>
+                <h5><?php echo $row['singer_name']; ?></h5>
             </td>
           
             <td class="role"><?php echo $row['category']; ?></td>
-            <td> <?php  echo '<audio controls>';
+
+            
+            <td style ="z-index: -11;" > <?php  echo '<audio controls>';
                          echo '<source src="' . $row['urlFile'] . '" type="audio/mpeg">';
                         echo '</audio>'; ?></td>
           
 
             <td class="active">
-                <p> Hiện</p>
+                <p><?php echo $row['ngaydang']; ?></p>
             </td>
             <td style="width: 2%"><a href="edit.php?id=<?=$key?>" class="edit">Edit</a></td>
             <td style =" width: 2%";>
@@ -157,15 +191,14 @@ if(isset($_SESSION['status'])) {
          </form>
         </td>
         </tr>
-        <?php endforeach; ?>
+    <?php endforeach; ?>
+<?php endif; ?>
     </tbody>
 </table>
 </div>
 
 
 
-
-    
 
     </section>
 

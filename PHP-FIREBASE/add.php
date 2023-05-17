@@ -67,13 +67,15 @@
                       <div>
                         <label for="">Thể Loại</label>
                         <select name="category" id="song-select">
-                            <option value="">--Please choose an option--</option>
-                            <option value="pop">Pop</option>
-                            <option value="rock">Rock</option>
-                            <option value="edm">EDM</option>
-                            <option value="dongque">Đồng Quê</option>
-                            <option value="acoustic">Acoustic</option>
-                            <option value="khác">Khác</option>
+                        <option value="">--Please choose an option--</option>
+                                    <option value="pop">Pop</option>
+                                    <option value="nhac_tre">Nhạc Trẻ</option>
+                                    <option value="remix">Remix</option>
+                                    <option value="rock">Rock</option>
+                                    <option value="edm">EDM</option>
+                                    <option value="dongque">Đồng Quê</option>
+                                    <option value="acoustic">Acoustic</option>
+                                    <option value="khác">Khác</option>
                         </select>
                       </div>    
                   </div>
